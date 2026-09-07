@@ -1,8 +1,8 @@
 import * as THREE from 'three';
 
-export const ROAD_WIDTH = 16.0;
-export const LANE_WIDTH = 3.8;
-export const LANES_COUNT = 4;
+export const ROAD_WIDTH = 27.0;
+export const LANE_WIDTH = 5.0;
+export const LANES_COUNT = 5;
 export const SEGMENT_LENGTH = 100.0;
 
 // Helper to generate a realistic procedural asphalt texture with lane wear & markings
