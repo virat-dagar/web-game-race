@@ -16,14 +16,14 @@ export class Player {
   // Transmission & RPM
   public currentGear = 1;
   public currentRpm = 0.2;
-  private gearThresholds = [0, 65, 105, 145, 180, 205, 230];
+  private gearThresholds = [0, 65, 105, 145, 180, 205, 230, 2500];
 
   // Speed physics
   public speedKmh = 0;
   public readonly minSpeedKmh = 60.0;
   public readonly normalSpeedKmh = 120.0;
-  public readonly maxSpeedKmh = 220.0;
-
+  public readonly maxSpeedKmh = 2200.0;
+  public readonly maxRpm = 2500.0;
   private speedUnits = 0;
   private readonly unitsToKmh = 4.0;
 
