@@ -311,7 +311,7 @@ export class Player {
     }
 
     // 1. Acceleration & Braking
-    const accelRate = 52.0;
+    const accelRate = 2000.0;
     const brakeRate = 98.0;
     const naturalDrag = 22.0;
 
