@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>ROAD RUSH - Endless Motorcycle Run</title>
+  <meta name="description" content="3D Endless Motorcycle Racing Game. High-speed highway dodging, near-miss bonuses, and clean arcade action." />
+  <!-- Google Fonts: Orbitron (Arcade Display) and Outfit (Modern UI) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;800;900&family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="./src/styles/main.css" />
+</head>
+<body>
+  <div id="app">
+    <!-- 3D WebGL Canvas -->
+    <canvas id="webgl-canvas"></canvas>
+
+    <!-- Speed Lines Effect Canvas -->
+    <canvas id="speed-lines-canvas"></canvas>
+
+    <!-- IN-GAME HUD -->
+    <div id="hud" class="screen-overlay hud-layer hidden">
+      <!-- Top Left Stats -->
+      <div class="hud-box hud-top-left">
+        <div class="hud-stat">
+          <span class="hud-label">SCORE</span>
+          <span id="hud-score" class="hud-val">000000</span>
+        </div>
+        <div class="hud-stat">
+          <span class="hud-label">DISTANCE</span>
+          <span id="hud-distance" class="hud-val">0.0 KM</span>
+        </div>
+      </div>
+
+      <!-- Top Right Stats -->
+      <div class="hud-box hud-top-right">
+        <div class="hud-stat">
+          <span class="hud-label">SPEED</span>
+          <span id="hud-speed" class="hud-val highlight-speed">0 KM/H</span>
+        </div>
+        <div class="hud-stat">
+          <span class="hud-label">BEST</span>
+          <span id="hud-best" class="hud-val highlight-best">000000</span>
+        </div>
+      </div>
+
+      <!-- Center Dynamic Popups -->
+      <div id="near-miss-popup" class="near-miss-pill hidden">
+        <span class="near-miss-text">CLOSE OVERTAKE!</span>
+        <span id="near-miss-bonus" class="near-miss-bonus">+250 PTS</span>
+      </div>
+
+      <!-- High Speed Rush Indicator -->
+      <div id="combo-pill" class="combo-pill hidden">COMBO x2</div>
+
+      <!-- Top Pause Button -->
+      <button id="btn-pause-hud" class="hud-btn-pause" aria-label="Pause Game">⏸</button>
+
+      <!-- Mobile Touch Controls -->
+      <div id="touch-controls" class="touch-controls">
+        <div class="touch-cluster-left">
+          <button id="touch-left" class="touch-btn steer-btn" aria-label="Steer Left">◀</button>
+          <button id="touch-right" class="touch-btn steer-btn" aria-label="Steer Right">▶</button>
+        </div>
+        <div class="touch-cluster-right">
+          <button id="touch-brake" class="touch-btn brake-btn" aria-label="Brake">BRAKE</button>
+          <button id="touch-gas" class="touch-btn gas-btn" aria-label="Accelerate">GAS</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- COUNTDOWN OVERLAY (3, 2, 1, GO!) -->
+    <div id="countdown-overlay" class="screen-overlay center-overlay hidden">
+      <div id="countdown-text" class="countdown-number">3</div>
+    </div>
+
+    <!-- MAIN MENU OVERLAY -->
+    <div id="main-menu" class="screen-overlay center-overlay">
+      <div class="menu-card">
+        <div class="logo-area">
+          <h1 class="main-title">ROAD <span>RUSH</span></h1>
+          <p class="main-subtitle">ENDLESS MOTORCYCLE RUN</p>
+        </div>
+
+        <div class="high-score-banner">
+          <span class="icon">🏆</span>
+          <span>BEST SCORE:</span>
+          <strong id="menu-best-score">000000</strong>
+        </div>
+
+        <div class="btn-stack">
+          <button id="btn-start" class="btn btn-primary">START RIDE</button>
+          <button id="btn-controls" class="btn btn-secondary">CONTROLS</button>
+        </div>
+
+        <div class="mini-controls-hint">
+          <span><kbd>W</kbd> / <kbd>↑</kbd> Gas</span>
+          <span><kbd>S</kbd> / <kbd>↓</kbd> Brake</span>
+          <span><kbd>A</kbd> / <kbd>D</kbd> Steer</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- CONTROLS MODAL -->
+    <div id="controls-modal" class="screen-overlay center-overlay hidden">
+      <div class="menu-card controls-card">
+        <h2>HOW TO PLAY</h2>
+        <div class="controls-list">
+          <div class="control-row">
+            <span class="keys"><kbd>W</kbd> or <kbd>↑</kbd></span>
+            <span class="action">Accelerate (Up to 220 KM/H)</span>
+          </div>
+          <div class="control-row">
+            <span class="keys"><kbd>S</kbd> or <kbd>↓</kbd></span>
+            <span class="action">Brake / Slow down</span>
+          </div>
+          <div class="control-row">
+            <span class="keys"><kbd>A</kbd> / <kbd>D</kbd> or <kbd>←</kbd> / <kbd>→</kbd></span>
+            <span class="action">Steer Left / Right (Bike leans)</span>
+          </div>
+          <div class="control-row">
+            <span class="keys"><kbd>ESC</kbd> or <kbd>P</kbd></span>
+            <span class="action">Pause / Resume Game</span>
+          </div>
+        </div>
+        <div class="pro-tips">
+          <p>🔥 <strong>Scoring:</strong> Higher speeds yield faster score accumulation.</p>
+          <p>⚡ <strong>Near Misses:</strong> Overtake vehicles dangerously close at &ge;100 KM/H to trigger combo multipliers!</p>
+        </div>
+        <button id="btn-close-controls" class="btn btn-secondary">BACK</button>
+      </div>
+    </div>
+
+    <!-- PAUSE MENU -->
+    <div id="pause-menu" class="screen-overlay center-overlay hidden">
+      <div class="menu-card">
+        <h2 class="menu-title">PAUSED</h2>
+        <div class="btn-stack">
+          <button id="btn-resume" class="btn btn-primary">RESUME</button>
+          <button id="btn-restart-pause" class="btn btn-secondary">RESTART</button>
+          <button id="btn-menu-pause" class="btn btn-tertiary">MAIN MENU</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- GAME OVER OVERLAY -->
+    <div id="game-over-modal" class="screen-overlay center-overlay hidden">
+      <div class="menu-card game-over-card">
+        <div id="new-best-badge" class="new-best-badge hidden">★ NEW BEST! ★</div>
+        <h2 class="game-over-title">RUN OVER</h2>
+        
+        <div class="stats-grid">
+          <div class="stat-item highlight-item">
+            <span class="stat-name">FINAL SCORE</span>
+            <span id="final-score" class="stat-value">0</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-name">DISTANCE</span>
+            <span id="final-distance" class="stat-value">0.0 KM</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-name">BEST SCORE</span>
+            <span id="final-best" class="stat-value">0</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-name">NEAR MISSES</span>
+            <span id="final-near-misses" class="stat-value">0</span>
+          </div>
+          <div class="stat-item full-width">
+            <span class="stat-name">VEHICLES OVERTAKEN</span>
+            <span id="final-overtaken" class="stat-value">0</span>
+          </div>
+        </div>
+
+        <div class="btn-stack">
+          <button id="btn-ride-again" class="btn btn-primary">RIDE AGAIN</button>
+          <button id="btn-menu-gameover" class="btn btn-secondary">MAIN MENU</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="./src/main.ts"></script>
+</body>
+</html>
