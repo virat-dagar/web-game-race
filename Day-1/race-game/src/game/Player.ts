@@ -311,8 +311,8 @@ export class Player {
     }
 
     // 1. Acceleration & Braking
-    const accelRate = 2000.0;
-    const brakeRate = 98.0;
+    const accelRate = 1000.0;
+    const brakeRate = 980.0;
     const naturalDrag = 22.0;
 
     if (throttle) {

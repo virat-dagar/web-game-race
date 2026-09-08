@@ -28,7 +28,7 @@ export interface TrafficVehicle {
 export class TrafficManager {
   private scene: THREE.Scene;
   public vehicles: TrafficVehicle[] = [];
-  private readonly maxVehicles = 0;
+  private readonly maxVehicles = 16;
   private readonly laneOffsets: number[] = [];
 
   constructor(scene: THREE.Scene) {
